@@ -33,7 +33,7 @@ You need to add this MCP server to your preferred coding agent.
 Run the following command in your terminal, replacing `/path/to/SSH-MCP` with the absolute path to where you cloned this repository:
 
 ```bash
-gemini-cli mcp add ssh-mcp "node /path/to/SSH-MCP/build/index.js"
+gemini-cli mcp add ssh-mcp node "/path/to/SSH-MCP/build/index.js"
 ```
 
 ### For Claude Code
