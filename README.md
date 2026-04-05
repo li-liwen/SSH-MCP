@@ -28,7 +28,7 @@ npm run build
 
 You need to add this MCP server to your preferred coding agent. 
 
-### For Gemini CLI
+### For Gemini
 
 First, link the package globally (or install it globally using `npm install -g .`):
 ```bash
@@ -37,20 +37,35 @@ npm link
 
 Then add it to your environment:
 ```bash
-gemini-cli mcp add ssh-mcp ssh-mcp
+gemini mcp add ssh-mcp ssh-mcp
 ```
 
 ### For Claude Code
 
-You can add this to your `claude_desktop_config.json` or run:
+Run the following command in your terminal:
 
 ```bash
 claude mcp add ssh-mcp ssh-mcp
 ```
 
-### For Continue
+### For Claude Desktop
 
-Add the following to your `config.json` under `mcpServers`:
+Add the following to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "ssh-mcp": {
+      "command": "ssh-mcp",
+      "args": []
+    }
+  }
+}
+```
+
+### For Continue & Other Agents (OpenCode, Codex, Cursor)
+
+Add the following to your `config.json` (or equivalent settings file) under `mcpServers`:
 
 ```json
 {
