@@ -30,10 +30,14 @@ You need to add this MCP server to your preferred coding agent.
 
 ### For Gemini CLI
 
-Run the following command in your terminal, replacing `/path/to/SSH-MCP` with the absolute path to where you cloned this repository:
-
+First, link the package globally (or install it globally using `npm install -g .`):
 ```bash
-gemini-cli mcp add ssh-mcp node "/path/to/SSH-MCP/build/index.js"
+npm link
+```
+
+Then add it to your environment:
+```bash
+gemini-cli mcp add ssh-mcp ssh-mcp
 ```
 
 ### For Claude Code
@@ -41,7 +45,7 @@ gemini-cli mcp add ssh-mcp node "/path/to/SSH-MCP/build/index.js"
 You can add this to your `claude_desktop_config.json` or run:
 
 ```bash
-claude mcp add ssh-mcp "node" "/path/to/SSH-MCP/build/index.js"
+claude mcp add ssh-mcp ssh-mcp
 ```
 
 ### For Continue
@@ -52,8 +56,8 @@ Add the following to your `config.json` under `mcpServers`:
 {
   "mcpServers": {
     "ssh-mcp": {
-      "command": "node",
-      "args": ["/path/to/SSH-MCP/build/index.js"]
+      "command": "ssh-mcp",
+      "args": []
     }
   }
 }

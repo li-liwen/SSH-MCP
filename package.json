@@ -4,6 +4,9 @@
   "description": "MCP Server for ssh Remote clients",
   "main": "build/index.js",
   "type": "module",
+  "bin": {
+    "ssh-mcp": "./build/index.js"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node build/index.js"

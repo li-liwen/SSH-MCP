@@ -16,30 +16,64 @@ export async function executeSSHCommand(
   config: SSHConfig
 ): Promise<{ stdout: string; stderr: string }> {
   const ssh = new NodeSSH();
-  let keyPath = config.privateKeyPath;
 
-  // If no password and no explicit private key provided, try default keys
-  if (!config.password && !keyPath) {
+  let keysToTry: string[] = [];
+  if (config.privateKeyPath) {
+    keysToTry.push(config.privateKeyPath);
+  } else if (!config.password) {
     const homeDir = os.homedir();
     const ed25519Path = path.join(homeDir, ".ssh", "id_ed25519");
     const rsaPath = path.join(homeDir, ".ssh", "id_rsa");
+    
+    // Add all standard keys if they exist
+    if (fs.existsSync(ed25519Path)) keysToTry.push(ed25519Path);
+    if (fs.existsSync(rsaPath)) keysToTry.push(rsaPath);
+  }
 
-    if (fs.existsSync(ed25519Path)) {
-      keyPath = ed25519Path;
-    } else if (fs.existsSync(rsaPath)) {
-      keyPath = rsaPath;
+  let connected = false;
+  let lastError: any = null;
+
+  if (keysToTry.length > 0) {
+    for (const keyPath of keysToTry) {
+      try {
+        await ssh.connect({
+          host: config.host,
+          username: config.username,
+          port: config.port || 22,
+          password: config.password,
+          privateKeyPath: keyPath,
+          readyTimeout: 30000,
+          agent: process.env.SSH_AUTH_SOCK,
+        });
+        connected = true;
+        break; // Connected successfully
+      } catch (err) {
+        lastError = err;
+        // Keep trying the next key
+      }
+    }
+  } else {
+    // Try connecting with password only, or SSH agent
+    try {
+      await ssh.connect({
+        host: config.host,
+        username: config.username,
+        port: config.port || 22,
+        password: config.password,
+        readyTimeout: 30000,
+        agent: process.env.SSH_AUTH_SOCK,
+      });
+      connected = true;
+    } catch (err) {
+      lastError = err;
     }
   }
 
-  try {
-    await ssh.connect({
-      host: config.host,
-      username: config.username,
-      port: config.port || 22,
-      password: config.password,
-      privateKeyPath: keyPath,
-    });
+  if (!connected) {
+    throw lastError || new Error("Failed to connect using provided authentication methods.");
+  }
 
+  try {
     const result = await ssh.execCommand(config.command, {
       cwd: ".",
     });
