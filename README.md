@@ -9,9 +9,10 @@ By exposing `ssh_execute_command` as a native MCP tool, the agent cleanly reques
 
 ## Features
 
-- Exposes the `ssh_execute_command` tool.
-- Automatically handles standard SSH keys (`~/.ssh/id_ed25519` or `~/.ssh/id_rsa`) if no explicit authentication is provided.
-- Compatible with all major MCP clients.
+- **Per-Host Permissions**: Dynamically generates a specific tool for each allowed host (e.g., `ssh_execute_example_com`). This allows your AI agent's permission system to ask for permission *per server*. Once you approve a host for a session, the AI can execute commands on it seamlessly, but connecting to a new host will trigger a new permission request.
+- **Auto-Discovery**: Automatically parses your `~/.ssh/config` to discover available hosts, or accepts specific allowed hosts via command-line arguments.
+- **Key Management**: Automatically handles standard SSH keys (`~/.ssh/id_ed25519` or `~/.ssh/id_rsa`) and works with `ssh-agent`.
+- **Cross-Platform**: Compatible with all major MCP clients.
 
 ## Installation and Build
 
@@ -26,7 +27,7 @@ npm run build
 
 ## Configuration
 
-You need to add this MCP server to your preferred coding agent. 
+You need to add this MCP server to your preferred coding agent. By default, `ssh-mcp` will read your `~/.ssh/config` file to discover allowed hosts. Alternatively, you can explicitly pass the allowed hosts as arguments.
 
 ### For Gemini
 
@@ -35,17 +36,18 @@ First, link the package globally (or install it globally using `npm install -g .
 npm link
 ```
 
-Then add it to your environment:
+Then add it to your environment. You can pass specific allowed IP addresses or hostnames at the end:
 ```bash
-gemini mcp add ssh-mcp ssh-mcp
+gemini mcp add ssh-mcp ssh-mcp 10.101.0.108 example.com
 ```
+*(If you omit the hosts, it will automatically expose tools for all hosts found in `~/.ssh/config`).*
 
 ### For Claude Code
 
 Run the following command in your terminal:
 
 ```bash
-claude mcp add ssh-mcp ssh-mcp
+claude mcp add ssh-mcp ssh-mcp 10.101.0.108
 ```
 
 ### For Claude Desktop
@@ -57,7 +59,7 @@ Add the following to your `claude_desktop_config.json`:
   "mcpServers": {
     "ssh-mcp": {
       "command": "ssh-mcp",
-      "args": []
+      "args": ["10.101.0.108", "example.com"]
     }
   }
 }
@@ -72,7 +74,7 @@ Add the following to your `config.json` (or equivalent settings file) under `mcp
   "mcpServers": {
     "ssh-mcp": {
       "command": "ssh-mcp",
-      "args": []
+      "args": ["10.101.0.108"]
     }
   }
 }
@@ -80,7 +82,7 @@ Add the following to your `config.json` (or equivalent settings file) under `mcp
 
 ## How the Agent uses it
 
-Once configured, simply instruct your agent:
-*"Connect to my remote server at `example.com` with username `ubuntu` and check the disk space."*
+Once configured, the MCP server will expose explicit tools like `ssh_execute_10_101_0_108`. Simply instruct your agent:
+*"Connect to my remote server at `10.101.0.108` with username `ubuntu` and check the disk space."*
 
-The agent will seamlessly use the `ssh_execute_command` tool to execute `df -h` on the remote server and return the results directly into the conversation.
+The agent will seamlessly use the explicit per-host tool (like `ssh_execute_10_101_0_108`) to execute commands (e.g., `df -h`) on the remote server and return the results directly into the conversation.
