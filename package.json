@@ -1,0 +1,31 @@
+{
+  "name": "ssh-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server for ssh Remote clients",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/li-liwen/SSH-MCP.git"
+  },
+  "keywords": ["mcp", "ssh", "wrapper"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/li-liwen/SSH-MCP/issues"
+  },
+  "homepage": "https://github.com/li-liwen/SSH-MCP#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "node-ssh": "^13.2.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}
